@@ -89,7 +89,7 @@ function Mark:delete_mark(mark, clear)
   end
 
   if buffer.placed_marks[mark].id ~= -1 then
-    utils.remove_sign(bufnr, buffer.placed_marks[mark].id)
+    utils.remove_sign(bufnr, buffer.placed_marks[mark].id, self.ns)
   end
 
   local line = buffer.placed_marks[mark].line
@@ -157,7 +157,7 @@ function Mark:delete_buf_marks(clear)
                           marks_by_line = {},
                           lowest_available_mark = "a" }
 
-  utils.remove_buf_signs(bufnr)
+  utils.remove_buf_signs(bufnr, self.ns)
   if clear then
     vim.cmd("delmarks!")
   end
@@ -368,7 +368,7 @@ function Mark:refresh(bufnr, force)
       self:register_mark(char, pos[2], pos[3], bufnr)
     end
   end
-  return
+  -- return
 end
 
 function Mark:add_sign(bufnr, text, line, id)
@@ -380,11 +380,12 @@ function Mark:add_sign(bufnr, text, line, id)
   else -- builtin
     priority = self.opt.priority[3]
   end
-  utils.add_sign(bufnr, text, line, id, "MarkSigns", priority)
+  local ns = self.ns
+  utils.add_sign(bufnr, text, line, id, ns, priority)
 end
 
 function Mark.new()
-  return setmetatable({ buffers = {}, opt = {} }, { __index = Mark })
+  return setmetatable({ buffers = {}, opt = {}, ns = nil }, { __index = Mark })
 end
 
 return Mark

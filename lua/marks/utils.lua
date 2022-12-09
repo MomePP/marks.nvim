@@ -8,23 +8,24 @@ end
 
 function M.add_sign(bufnr, text, line, id, group, priority)
   priority = priority or 10
-  local sign_name = "Marks_" .. text
-  if not M.sign_cache[sign_name] then
-    M.sign_cache[sign_name] = true
-    vim.fn.sign_define(sign_name, { text = text, texthl = "MarkSignHL",
-                                    numhl = "MarkSignNumHL" })
-  end
-  vim.fn.sign_place(id, group, sign_name, bufnr, { lnum = line, priority = priority })
+  vim.api.nvim_buf_set_extmark(bufnr, group, line - 1, -1, {
+    -- sign_text           = text,
+    sign_text           = '',
+    sign_hl_group       = 'MarkSignHL',
+    line_hl_group       = 'NONE',
+    number_hl_group     = 'MarkSignNumHL',
+    cursorline_hl_group = 'NONE',
+    id = id,
+    priority = priority
+  })
 end
 
 function M.remove_sign(bufnr, id, group)
-  group = group or "MarkSigns"
-  vim.fn.sign_unplace(group, { buffer = bufnr, id = id })
+  vim.api.nvim_buf_del_extmark(bufnr, group, id)
 end
 
 function M.remove_buf_signs(bufnr, group)
-  group = group or "MarkSigns"
-  vim.fn.sign_unplace(group, { buffer = bufnr })
+  vim.api.nvim_buf_clear_namespace(bufnr, group, 0, -1)
 end
 
 function M.search(marks, start_data, init_values, cmp, cyclic)

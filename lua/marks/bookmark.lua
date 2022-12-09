@@ -70,7 +70,7 @@ function Bookmarks:place_mark(group_nr, bufnr)
   local display_signs = utils.option_nil(self.opt.buf_signs[bufnr], self.opt.signs)
   if display_signs and group.sign then
     local id = group.sign:byte() * 100 + pos[1]
-    self:add_sign(bufnr, group.sign, pos[1], id)
+    self:add_sign(bufnr, group.sign, pos[1], id, group.ns)
     data.sign_id = id
   end
 
@@ -110,7 +110,7 @@ function Bookmarks:delete_mark(group_nr, bufnr, line)
   end
 
   if mark.sign_id then
-    utils.remove_sign(bufnr, mark.sign_id, "BookmarkSigns")
+    utils.remove_sign(bufnr, mark.sign_id, group.ns)
   end
 
   a.nvim_buf_del_extmark(bufnr, group.ns, mark.extmark_id)
@@ -138,7 +138,7 @@ function Bookmarks:delete_all(group_nr)
   for bufnr, buf_marks in pairs(group.marks) do
     for _, mark in pairs(buf_marks) do
       if mark.sign_id then
-        utils.remove_sign(bufnr, mark.sign_id, "BookmarkSigns")
+        utils.remove_sign(bufnr, mark.sign_id, group.ns)
       end
 
       a.nvim_buf_del_extmark(bufnr, group.ns, mark.extmark_id)
@@ -276,8 +276,8 @@ function Bookmarks:refresh()
 
   local buf_marks
   local display_signs
-  utils.remove_buf_signs(bufnr, "BookmarkSigns")
   for _, group in pairs(self.groups) do
+    utils.remove_buf_signs(bufnr, group.ns)
     buf_marks = group.marks[bufnr]
     if buf_marks then
       for _, mark in pairs(vim.tbl_values(buf_marks)) do
@@ -291,7 +291,7 @@ function Bookmarks:refresh()
         end
         display_signs = utils.option_nil(self.opt.buf_signs[bufnr], self.opt.signs)
         if display_signs and group.sign then
-          self:add_sign(bufnr, group.sign, line + 1, mark.sign_id)
+          self:add_sign(bufnr, group.sign, line + 1, mark.sign_id, group.ns)
         end
       end
     end
@@ -335,8 +335,8 @@ function Bookmarks:all_to_list(list_type)
   list_fn(items, "r")
 end
 
-function Bookmarks:add_sign(bufnr, text, line, id)
-  utils.add_sign(bufnr, text, line, id, "BookmarkSigns", self.priority)
+function Bookmarks:add_sign(bufnr, text, line, id, group)
+  utils.add_sign(bufnr, text, line, id, group, self.priority)
 end
 
 function Bookmarks.new()
