@@ -233,6 +233,7 @@ function M.setup(config)
   setup_mappings(config)
   setup_autocommands()
 
+  M.mark_state.ns = vim.api.nvim_create_namespace("MarkSigns")
   M.mark_state.opt.signs = utils.option_nil(config.signs, true)
   M.mark_state.opt.buf_signs = {}
   M.mark_state.opt.force_write_shada = utils.option_nil(config.force_write_shada, false)
