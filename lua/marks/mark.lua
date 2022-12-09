@@ -430,8 +430,8 @@ function Mark:add_sign(bufnr, text, line, id)
   else -- builtin
     priority = self.opt.priority[3]
   end
-  local ns = self.ns
-  utils.add_sign(bufnr, text, line, id, ns, priority)
+  local hack_text = '' -- HACK: force lowercase marks to showing only this as a `sign_text`
+  utils.add_sign(bufnr, hack_text, line, id, self.ns, priority)
 end
 
 function Mark.new()
