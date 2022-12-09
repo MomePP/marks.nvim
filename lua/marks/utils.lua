@@ -9,8 +9,7 @@ end
 function M.add_sign(bufnr, text, line, id, group, priority)
   priority = priority or 10
   vim.api.nvim_buf_set_extmark(bufnr, group, line - 1, -1, {
-    -- sign_text           = text,
-    sign_text           = '',
+    sign_text           = text,
     sign_hl_group       = 'MarkSignHL',
     line_hl_group       = 'NONE',
     number_hl_group     = 'MarkSignNumHL',
