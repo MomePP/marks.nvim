@@ -15,7 +15,8 @@ function M.add_sign(bufnr, text, line, id, group, priority)
     number_hl_group     = 'MarkSignNumHL',
     cursorline_hl_group = 'NONE',
     id = id,
-    priority = priority
+    priority = priority,
+    right_gravity = false,
   })
 end
 

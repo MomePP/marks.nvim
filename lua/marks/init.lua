@@ -1,5 +1,4 @@
 local mark = require'marks.mark'
-local bookmark = require'marks.bookmark'
 local utils = require'marks.utils'
 local M = {}
 
@@ -65,10 +64,6 @@ function M.prev()
   M.mark_state:prev_mark()
 end
 
-function M.annotate()
-  M.bookmark_state:annotate()
-end
-
 function M.refresh(force_reregister)
   if M.excluded_fts[vim.bo.ft] or M.excluded_bts[vim.bo.bt] then
     return
@@ -76,7 +71,6 @@ function M.refresh(force_reregister)
 
   force_reregister = force_reregister or false
   M.mark_state:refresh(nil, force_reregister)
-  M.bookmark_state:refresh()
 end
 
 function M._on_delete()
@@ -87,52 +81,22 @@ function M._on_delete()
   end
 
   M.mark_state.buffers[bufnr] = nil
-  for _, group in pairs(M.bookmark_state.groups) do
-    group.marks[bufnr] = nil
-  end
 end
 
 function M.toggle_signs(bufnr)
   if not bufnr then
     M.mark_state.opt.signs = not M.mark_state.opt.signs
-    M.bookmark_state.opt.signs = not M.bookmark_state.opt.signs
 
     for buf, _ in pairs(M.mark_state.opt.buf_signs) do
       M.mark_state.opt.buf_signs[buf] = M.mark_state.opt.signs
     end
 
-    for buf, _ in pairs(M.bookmark_state.opt.buf_signs) do
-      M.bookmark_state.opt.buf_signs[buf] = M.bookmark_state.opt.signs
-    end
   else
     M.mark_state.opt.buf_signs[bufnr] = not utils.option_nil(
         M.mark_state.opt.buf_signs[bufnr], M.mark_state.opt.signs)
-    M.bookmark_state.opt.buf_signs[bufnr] = not utils.option_nil(
-        M.bookmark_state.opt.buf_signs[bufnr], M.bookmark_state.opt.signs)
   end
 
   M.refresh(true)
-end
-
--- set_group[0-9] functions
-for i=0,9 do
-  M["set_bookmark" .. i] = function() M.bookmark_state:place_mark(i) end
-  M["toggle_bookmark" .. i] = function() M.bookmark_state:toggle_mark(i) end
-  M["delete_bookmark" .. i] = function() M.bookmark_state:delete_all(i) end
-  M["next_bookmark" .. i] = function() M.bookmark_state:next(i) end
-  M["prev_bookmark" .. i] = function() M.bookmark_state:prev(i) end
-end
-
-function M.delete_bookmark()
-  M.bookmark_state:delete_mark_cursor()
-end
-
-function M.next_bookmark()
-  M.bookmark_state:next()
-end
-
-function M.prev_bookmark()
-  M.bookmark_state:prev()
 end
 
 M.mappings = {
@@ -142,18 +106,10 @@ M.mappings = {
   next = "m]",
   prev = "m[",
   preview = "m:",
-  next_bookmark = "m}",
-  prev_bookmark = "m{",
   delete = "dm",
   delete_line = "dm-",
-  delete_bookmark = "dm=",
   delete_buf = "dm<space>"
 }
-
-for i=0,9 do
-  M.mappings["set_bookmark" .. i] = "m"..tostring(i)
-  M.mappings["delete_bookmark" .. i] = "dm"..tostring(i)
-end
 
 local function user_mappings(config)
   for cmd, key in pairs(config.mappings) do
@@ -195,23 +151,6 @@ function M.setup(config)
   M.mark_state = mark.new()
   M.mark_state.builtin_marks = config.builtin_marks or {}
 
-  M.bookmark_state = bookmark.new()
-
-  local bookmark_config
-  for i=0,9 do
-    bookmark_config = config["bookmark_" .. i]
-    if bookmark_config then
-      if bookmark_config.sign == false then
-        M.bookmark_state.signs[i] = nil
-      else
-        M.bookmark_state.signs[i] = bookmark_config.sign or M.bookmark_state.signs[i]
-      end
-      M.bookmark_state.virt_text[i] = bookmark_config.virt_text or
-          M.bookmark_state.virt_text[i]
-      M.bookmark_state.prompt_annotate[i] = bookmark_config.annotate
-    end
-  end
-
   local excluded_fts = {}
   for _, ft in ipairs(config.excluded_filetypes or {}) do
     excluded_fts[ft] = true
@@ -236,6 +175,7 @@ function M.setup(config)
   M.mark_state.ns = vim.api.nvim_create_namespace("MarkSigns")
   M.mark_state.opt.signs = utils.option_nil(config.signs, true)
   M.mark_state.opt.buf_signs = {}
+  M.mark_state.opt.marks_sign = config.marks_sign or nil
   M.mark_state.opt.force_write_shada = utils.option_nil(config.force_write_shada, false)
   M.mark_state.opt.cyclic = utils.option_nil(config.cyclic, true)
 
@@ -245,12 +185,10 @@ function M.setup(config)
     mark_priority[1] = config.sign_priority.lower or mark_priority[1]
     mark_priority[2] = config.sign_priority.upper or mark_priority[2]
     mark_priority[3] = config.sign_priority.builtin or mark_priority[3]
-    M.bookmark_state.priority = config.sign_priority.bookmark or 10
   elseif type(config.sign_priority) == "number" then
     mark_priority[1] = config.sign_priority
     mark_priority[2] = config.sign_priority
     mark_priority[3] = config.sign_priority
-    M.bookmark_state.priority = config.sign_priority
   end
 
   local refresh_interval = utils.option_nil(config.refresh_interval, 150)
