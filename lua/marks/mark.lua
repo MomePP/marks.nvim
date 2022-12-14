@@ -37,9 +37,10 @@ function Mark:register_mark(mark, line, col, bufnr)
 
   local display_signs = utils.option_nil(self.opt.buf_signs[bufnr], self.opt.signs)
   if display_signs then
+    local shown_mark = utils.option_nil(self.opt.marks_sign, mark)
     local id = mark:byte() * 100
     buffer.placed_marks[mark].id = id
-    self:add_sign(bufnr, mark, line, id)
+    self:add_sign(bufnr, shown_mark, line, id)
   end
 
   if not utils.is_lower(mark) or
@@ -380,8 +381,7 @@ function Mark:add_sign(bufnr, text, line, id)
   else -- builtin
     priority = self.opt.priority[3]
   end
-  local hack_text = '' -- HACK: force lowercase marks to showing only this as a `sign_text`
-  utils.add_sign(bufnr, hack_text, line, id, self.ns, priority)
+  utils.add_sign(bufnr, text, line, id, self.ns, priority)
 end
 
 function Mark.new()
