@@ -49,6 +49,29 @@ function M.search(marks, start_data, init_values, cmp, cyclic)
   return min_next_set and min_next or min
 end
 
+function M.search_mark(marks, start_data, init_values, cmp, cyclic)
+  local min_next = init_values
+  local min_next_set = false
+  -- if we need to wrap around
+  local min = init_values
+
+  for mark, data in pairs(marks) do
+    if cmp(data, start_data, mark) and not cmp(data, min_next, mark) then
+      min_next = data
+      min_next.name = mark
+      min_next_set = true
+    end
+    if cyclic and not cmp(data, min, mark) then
+      min = data
+      min.name = mark
+    end
+  end
+  if not cyclic then
+    return min_next_set and min_next.name or nil
+  end
+  return min_next_set and min_next.name or min.name
+end
+
 function M.is_valid_mark(char)
   return M.is_letter(char) or builtin_marks[char]
 end
