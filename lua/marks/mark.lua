@@ -164,6 +164,32 @@ function Mark:delete_buf_marks(clear)
   end
 end
 
+function Mark:get_next_mark()
+  local bufnr = a.nvim_get_current_buf()
+
+  if not self.buffers[bufnr] then
+    return
+  end
+
+  local current_line = a.nvim_win_get_cursor(0)[1]
+  local marks = {}
+  for mark, data in pairs(self.buffers[bufnr].placed_marks) do
+    if utils.is_letter(mark) then
+      marks[mark] = data
+    end
+  end
+
+  if vim.tbl_isempty(marks) then
+    return
+  end
+
+  local function comparator(x, y, _)
+    return x.line > y.line
+  end
+
+  return utils.search_mark(marks, {line=current_line}, {line=math.huge}, comparator, self.opt.cyclic)
+end
+
 function Mark:next_mark()
   local bufnr = a.nvim_get_current_buf()
 
