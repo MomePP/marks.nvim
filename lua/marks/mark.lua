@@ -164,7 +164,7 @@ function Mark:delete_buf_marks(clear)
   end
 end
 
-function Mark:get_next_mark()
+function Mark:get_nearest_next_mark()
   local bufnr = a.nvim_get_current_buf()
 
   if not self.buffers[bufnr] then
@@ -184,7 +184,7 @@ function Mark:get_next_mark()
   end
 
   local function comparator(x, y, _)
-    return x.line > y.line
+    return x.line >= y.line
   end
 
   return utils.search_mark(marks, {line=current_line}, {line=math.huge}, comparator, self.opt.cyclic)
