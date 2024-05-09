@@ -11,7 +11,7 @@ function M.set()
   end
 
   if utils.is_valid_mark(input) then
-    if not M.excluded_fts[vim.bo.ft] then
+    if not M.excluded_fts[vim.bo.ft] and not M.excluded_bts[vim.bo.bt] then
       M.mark_state:place_mark_cursor(input)
     end
     vim.cmd("normal! m" .. input)
@@ -19,13 +19,13 @@ function M.set()
 end
 
 function M.set_next()
-  if not M.excluded_fts[vim.bo.ft] then
+  if not M.excluded_fts[vim.bo.ft] and not M.excluded_bts[vim.bo.bt] then
     M.mark_state:place_next_mark_cursor()
   end
 end
 
 function M.toggle()
-  if not M.excluded_fts[vim.bo.ft] then
+  if not M.excluded_fts[vim.bo.ft] and not M.excluded_bts[vim.bo.bt] then
     M.mark_state:toggle_mark_cursor()
   end
 end
@@ -65,7 +65,7 @@ function M.prev()
 end
 
 function M.refresh(force_reregister)
-  if M.excluded_fts[vim.bo.ft] then
+  if M.excluded_fts[vim.bo.ft] or M.excluded_bts[vim.bo.bt] then
     return
   end
 
@@ -158,6 +158,13 @@ function M.setup(config)
   end
 
   M.excluded_fts = excluded_fts
+
+  local excluded_bts = {}
+  for _, bt in ipairs(config.excluded_buftypes or {}) do
+    excluded_bts[bt] = true
+  end
+
+  M.excluded_bts = excluded_bts
 
   config.default_mappings = utils.option_nil(config.default_mappings, true)
   setup_mappings(config)

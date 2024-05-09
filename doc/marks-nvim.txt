@@ -132,6 +132,14 @@ plugin. The following options are defined:
     display any signs. Setting and moving to marks with ` or ' will still work, but
     movement commands like "m]" or "m[" will not.
 
+  excluded_buftypes: table                         *marks-excluded_buftypes*
+    (default {})
+
+    Which buftypes to ignore. If a buffer with this buftype is opened, then
+    marks.nvim will not track any marks set in this buffer, and will not
+    display any signs. Setting and moving to marks with ` or ' will still work, but
+    movement commands like "m]" or "m[" will not.
+
   bookmark_[0-9]: table                              *marks-bookmark_config*
     (default {})
 
@@ -201,6 +209,7 @@ The following are the available keys of the mapping table (see above as well):
 
   set_bookmark[0-9]      Sets a bookmark from group[0-9].
   delete_bookmark[0-9]   Deletes all bookmarks from group[0-9].
+  toggle_bookmark[0-9]   Toggles a bookmark from group[0-9].
   delete_bookmark        Deletes the bookmark under the cursor.
   next_bookmark          Moves to the next bookmark having the same type as the
                          bookmark under the cursor.
@@ -269,6 +278,7 @@ on the functionality of each mapping):
     <Plug>(Marks-prev-bookmark)
     <Plug>(Marks-set-bookmark[0-9])
     <Plug>(Marks-delete-bookmark[0-9])
+    <Plug>(Marks-toggle-bookmark[0-9])
     <Plug>(Marks-next-bookmark[0-9])
     <Plug>(Marks-prev-bookmark[0-9])
 

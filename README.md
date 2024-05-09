@@ -52,6 +52,8 @@ require'marks'.setup {
   sign_priority = { lower=10, upper=15, builtin=8, bookmark=20 },
   -- disables mark tracking for specific filetypes. default {}
   excluded_filetypes = {},
+  -- disables mark tracking for specific buftypes. default {}
+  excluded_buftypes = {},
   -- marks.nvim allows you to configure up to 10 bookmark groups, each with its own
   -- sign/virttext. Bookmarks can be used to group together positions and quickly move
   -- across multiple buffers. default sign is '!@#$%^&*()' (from 0 to 9), and
@@ -130,10 +132,10 @@ The following keys are available to be passed to the mapping table:
                          bookmark under the cursor.
   prev_bookmark          Moves to the previous bookmark having the same type as the
                          bookmark under the cursor.
-  next_bookmark[0-9]     Moves to the next bookmark of of the same group type. Works by
+  next_bookmark[0-9]     Moves to the next bookmark of the same group type. Works by
                          first going according to line number, and then according to buffer
                          number.
-  prev_bookmark[0-9]     Moves to the previous bookmark of of the same group type. Works by
+  prev_bookmark[0-9]     Moves to the previous bookmark of the same group type. Works by
                          first going according to line number, and then according to buffer
                          number.
   annotate               Prompts the user for a virtual line annotation that is then placed
@@ -158,6 +160,7 @@ marks.nvim also provides a list of `<Plug>` mappings for you, in case you want t
 <Plug>(Marks-prev-bookmark)
 <Plug>(Marks-set-bookmark[0-9])
 <Plug>(Marks-delete-bookmark[0-9])
+<Plug>(Marks-toggle-bookmark[0-9])
 <Plug>(Marks-next-bookmark[0-9])
 <Plug>(Marks-prev-bookmark[0-9])
 ```
