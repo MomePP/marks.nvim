@@ -166,9 +166,6 @@ function M.setup(config)
 
   M.excluded_bts = excluded_bts
 
-  M.bookmark_state.opt.signs = true
-  M.bookmark_state.opt.buf_signs = {}
-
   config.default_mappings = utils.option_nil(config.default_mappings, true)
   setup_mappings(config)
   setup_autocommands()
