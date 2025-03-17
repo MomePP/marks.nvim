@@ -2,11 +2,46 @@
 A better user experience for interacting with and manipulating Vim marks.
 Requires Neovim 0.5+.
 
-![](../assets/marks-demo.gif)
+## Note about this fork
 
-Screenshot:
+- merged PR [#63](https://github.com/chentoast/marks.nvim/pull/63)
+- merged PR [#106](https://github.com/chentoast/marks.nvim/pull/106)
+- use buffer extmark api with marks, on lowercase marks only show icon sign.
+- remove all the bookmarks module, i personally use nvim marks as same as bookmarks feature provided.
+- add helper functions to re-create preview command from user config.
 
-![](../assets/demo_screenshot.png)
+### There is some update with plugin config as shown below.
+```lua
+require'marks'.setup {
+    -- whether to map keybinds or not. default true
+    default_mappings = true,
+    -- which builtin marks to show. default {}
+    builtin_marks = { ".", "<", ">", "^" },
+    -- whether movements cycle back to the beginning/end of buffer. default true
+    cyclic = true,
+    -- whether the shada file is updated after modifying uppercase marks. default false
+    force_write_shada = false,
+    -- sign priorities for each type of mark - builtin marks, uppercase marks, lowercase
+    -- marks, and bookmarks.
+    -- can be either a table with all/none of the keys, or a single number, in which case
+    -- the priority applies to all marks.
+    -- default 10.
+    sign_priority = { lower=10, upper=15, builtin=8 },
+    -- disables mark tracking for specific filetypes. default {}
+    excluded_filetypes = {},
+    -- disables mark tracking for specific buftypes. default {}
+    excluded_buftypes = {},
+
+    mappings = {}
+
+    -- extra opts from this fork to set column sign
+    marks_sign = '',
+}
+```
+
+my config for personal use with `snacks.nvim` picker can be found here: [mark-config.lua](https://github.com/MomePP/dotfiles-config/blob/develop/nvim/lua/plugins/marks-config.lua)
+
+---
 
 ## Features
 
