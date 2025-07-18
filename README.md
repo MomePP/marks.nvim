@@ -56,7 +56,16 @@ my config for personal use with `snacks.nvim` picker can be found here: [mark-co
 
 I recommend you use your favorite vim plugin manager, like vim-plug, or packer.
 
-For example, using vim-plug, you would add the following line:
+For example, using lazy.nvim, you would add the following line to the `spec` field of setup:
+
+```Lua
+{
+  "chentoast/marks.nvim",
+  event = "VeryLazy",
+  opts = {},
+}
+```
+of if you are using vim-plug:
 
 `Plug 'chentoast/marks.nvim'`
 
